@@ -148,7 +148,8 @@
         <p><span id="hint"><i>Please press down and speak.</i></span></p>
       </center>
       <article id="transcript">[Transcription]</article>
-      <audio id="audioPlayback" controls style="display: none"></audio>
+      <audio id="audioPlayback" controls style="display: block"></audio>
+      
       <h2>Configuration</h2>
 
       <table>
@@ -224,6 +225,7 @@
       const statusMessage = document.getElementById("statusMessage");
       const hint = document.getElementById("hint");
       let mimeType;
+      let playedAudio = false;
 
       const types = [
         "audio/webm",
@@ -329,6 +331,11 @@
 
       // Start recording
       async function startRecording() {
+        if (!playedAudio) {
+          audioPlayback.play();
+          playedAudio = true;
+        }
+        
         pressStartTime = Date.now(); // track press start
         audioChunks = [];
 
@@ -372,8 +379,8 @@
           // We have all recorded data in audioChunks
           const blob = new Blob(audioChunks, { type: mimeType });
           const url = URL.createObjectURL(blob);
-          const audio = new Audio(url);
-          audio.play();          
+          // const audio = new Audio(url);
+          // audio.play();          
           const reader = new FileReader();
           reader.readAsArrayBuffer(blob);
           reader.onloadend = () => {
