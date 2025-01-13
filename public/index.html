@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>DataScientest Project Universal Translator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+
+    <style>
+      body {
+        font-family: sans-serif;
+        font-optical-sizing: auto;
+        font-style: normal;
+      }
+      label {
+        width: 15%;
+        padding: 10px;
+      }
+      button {
+        margin: 0.5rem;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+      }
+
+
+      .round-button {
+        width: 200px; /* Adjust the width of the button */
+        height: 200px; /* Adjust the height of the button */
+        border-radius: 50%; /* Make the button round */
+        background-color: #bf3333; /* Set a background color */
+        border: 2px solid #9f9f9f; /* Remove the default border */
+        outline: 5px solid rgb(219, 219, 219);
+        display: flex; /* Center the content */
+        align-items: center; /* Center the content vertically */
+        justify-content: center; /* Center the content horizontally */
+        cursor: pointer; /* Change cursor to pointer on hover */
+        box-shadow: inset 30px 30px 40px rgba(0, 0, 0, 0.3),
+          inset -30px -30px 40px rgba(255, 255, 255, 0.3); /* Create an inset shadow to look pressed */
+        margin: 50px;
+        transition: background-color 0.3s ease; /* Optional: add transition effect */
+      }
+      .round-button:active {
+        /*transform: scale(0.95); /* Shrink the button slightly */
+        box-shadow: inset -10px -10px 30px rgba(255, 255, 255, 0.6),
+          inset 10px 10px 30px rgba(255, 255, 255, 0.3);
+        background-color: #bf3333; /* Darken the background */
+      }
+
+      /* Style for the SVG inside the button */
+      .microphone-icon {
+        width: 120px; /* Adjust size of the icon */
+        height: 120px; /* Adjust size of the icon */
+        filter: invert(100%) brightness(100%) contrast(100%);
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css"
+    />
+  </head>
+  <body>
+    <main>
+      <h1>DataScientest Project Universal Translator</h1>
+      <hr />
+      <!-- <label for="group_id">Group ID</label> -->
+      <input
+        id="group_id"
+        placeholder="Enter group ID"
+        type="hidden"
+        value="ds"
+      />
+
+      <!-- Only one button now -->
+
+      <fieldset role="group">
+        <label for="language">Translate into</label>
+        <select
+          name="language"
+          id="language"
+          aria-label="Translate into"
+          required
+        >
+          <option value="afrikaans">Afrikaans</option>
+          <option value="arabic">Arabic</option>
+          <option value="armenian">Armenian</option>
+          <option value="azerbaijani">Azerbaijani</option>
+          <option value="belarusian">Belarusian</option>
+          <option value="bosnian">Bosnian</option>
+          <option value="bulgarian">Bulgarian</option>
+          <option value="catalan">Catalan</option>
+          <option value="chinese">Chinese</option>
+          <option value="croatian">Croatian</option>
+          <option value="czech">Czech</option>
+          <option value="danish">Danish</option>
+          <option value="dutch">Dutch</option>
+          <option value="english">English</option>
+          <option value="estonian">Estonian</option>
+          <option value="finnish">Finnish</option>
+          <option value="french">French</option>
+          <option value="galician">Galician</option>
+          <option value="german">German</option>
+          <option value="greek">Greek</option>
+          <option value="hebrew">Hebrew</option>
+          <option value="hindi">Hindi</option>
+          <option value="hungarian">Hungarian</option>
+          <option value="icelandic">Icelandic</option>
+          <option value="indonesian">Indonesian</option>
+          <option value="italian">Italian</option>
+          <option value="japanese">Japanese</option>
+          <option value="kannada">Kannada</option>
+          <option value="kazakh">Kazakh</option>
+          <option value="korean">Korean</option>
+          <option value="latvian">Latvian</option>
+          <option value="lithuanian">Lithuanian</option>
+          <option value="macedonian">Macedonian</option>
+          <option value="malay">Malay</option>
+          <option value="marathi">Marathi</option>
+          <option value="maori">Maori</option>
+          <option value="nepali">Nepali</option>
+          <option value="norwegian">Norwegian</option>
+          <option value="persian">Persian</option>
+          <option value="polish">Polish</option>
+          <option value="portuguese">Portuguese</option>
+          <option value="romanian">Romanian</option>
+          <option value="russian">Russian</option>
+          <option value="serbian">Serbian</option>
+          <option value="slovak">Slovak</option>
+          <option value="slovenian">Slovenian</option>
+          <option value="spanish">Spanish</option>
+          <option value="swahili">Swahili</option>
+          <option value="swedish">Swedish</option>
+          <option value="tagalog">Tagalog</option>
+          <option value="tamil">Tamil</option>
+          <option value="thai">Thai</option>
+          <option value="turkish">Turkish</option>
+          <option value="ukrainian">Ukrainian</option>
+          <option value="urdu">Urdu</option>
+          <option value="vietnamese">Vietnamese</option>
+          <option value="welsh">Welsh</option>
+        </select>
+      </fieldset>
+      <center>
+        <button class="round-button" id="recordBtn">
+          <img src="microphone.svg" alt="Microphone" class="microphone-icon" />
+        </button>
+        <p><span id="hint"><i>Please press down and speak.</i></span></p>
+      </center>
+      <article id="transcript">[Transcription]</article>
+      <audio id="audioPlayback" controls style="display: none"></audio>
+      <h2>Configuration</h2>
+
+      <table>
+        <tbody>
+          <tr>
+            <th scope="row">Password</th>
+            <td>
+              <input
+                id="password"
+                name="password"
+                placeholder="Enter password"
+                value=""
+              />
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Status</th>
+            <td>
+              <span id="statusMessage" aria-busy="true"
+                >Connecting to server</span
+              >
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Server</th>
+            <td>
+              <input
+                id="wsUrl"
+                name="url"
+                placeholder="Enter websockets url"
+                value="wss://ds-translator.pradikow.com/ws"
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+
+    <script>
+      // WebSocket endpoint
+      let wsUrl = document.getElementById("wsUrl").value;
+      console.log(wsUrl);
+
+      // Get references to DOM elements
+      const recordBtn = document.getElementById("recordBtn");
+      const transcriptEl = document.getElementById("transcript");
+      const audioPlayback = document.getElementById("audioPlayback");
+      const groupIdInput = document.getElementById("group_id");
+      const password = document.getElementById("password");
+      const language = document.getElementById("language");
+      const wsUrlInput = document.getElementById("wsUrl");
+      
+      let mediaRecorder;
+      let audioChunks = [];
+      let ws;
+      let reconnectTimeout = null;
+      let reconnectDelay = 1000; // Start with a 1-second delay
+      const maxReconnectDelay = 30000; // Cap it at 30 seconds (example)
+      // Track press start time
+      let pressStartTime = 0;
+      const statusMessage = document.getElementById("statusMessage");
+      const hint = document.getElementById("hint");
+
+      // Initialize WebSocket
+
+      function connectWebSocket() {
+        ws = new WebSocket(wsUrl);
+
+        ws.onopen = () => {
+          console.log("WebSocket connected to server");
+          statusMessage.setAttribute("aria-busy", "false");
+          statusMessage.textContent = "Connected to server";
+        };
+
+        // We expect messages from the server in JSON format
+        //  {
+        //    event: 'transcript_result' | 'tts_audio',
+        //    text?: string,
+        //    audioBase64?: string,
+        //    contentType?: string
+        //  }
+        ws.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            if (data.event === "transcript_result") {
+              // Display transcript or translated text
+              transcriptEl.textContent = data.text;
+            } else if (data.event === "authentication_error") {
+              console.log("Wrong password");
+              transcriptEl.textContent = data.text;
+            } else if (data.event === "tts_audio") {
+              console.log("Received TTS audio from server");
+              const audioBlob = base64ToBlob(
+                data.audioBase64,
+                data.contentType
+              );
+              const url = URL.createObjectURL(audioBlob);
+              audioPlayback.src = url;
+              //audioPlayback.style.display = "block";
+              //audioPlayback.style.display = "none";  
+              audioPlayback.play();
+              
+            }
+          } catch (err) {
+            console.error("Error parsing message", err);
+          }
+        };
+
+        ws.onerror = (err) => {
+          console.error("WebSocket error", err);
+        };
+
+        ws.onclose = (event) => {
+          console.warn("WebSocket closed:", event.reason);
+          // statusDiv.textContent = "Disconnected";
+
+          // Attempt to reconnect
+          statusMessage.setAttribute("aria-busy", "true");
+          statusMessage.textContent = "Connecting to server...";
+
+          scheduleReconnect();
+        };
+      }
+
+      function scheduleReconnect() {
+        // If a reconnect is already scheduled, do nothing
+        if (reconnectTimeout) return;
+
+        // Schedule the next attempt
+        reconnectTimeout = setTimeout(() => {
+          reconnectTimeout = null;
+          connectWebSocket();
+          // Increase the delay for the next attempt up to a limit
+          reconnectDelay = Math.min(reconnectDelay * 2, maxReconnectDelay);
+        }, reconnectDelay);
+      }
+
+      // Helper to convert base64 to Blob
+      function base64ToBlob(base64, contentType) {
+        const byteCharacters = atob(base64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        return new Blob([byteArray], { type: contentType });
+      }
+
+      // Start recording
+      async function startRecording() {
+        pressStartTime = Date.now(); // track press start
+        audioChunks = [];
+
+        // Request microphone permission and get audio stream
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+        mediaRecorder = new MediaRecorder(stream);
+
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            audioChunks.push(event.data);
+          }
+        };
+
+        mediaRecorder.start();
+        console.log("Recording started");
+      }
+
+      // Stop recording
+      function stopRecording() {
+        const pressDuration = Date.now() - pressStartTime;
+        hint.style.display = "none";
+
+        // If pressed < 3 seconds, alert user and do not send
+        if (pressDuration < 3000) {
+          alert("Please press and hold for at least 3 seconds.");
+          console.log("Button pressed shorter than 3 seconds");
+          // Optionally, you can cancel the recording and return early
+          if (mediaRecorder && mediaRecorder.state !== "inactive") {
+            mediaRecorder.stop();
+          }
+          return;
+        }
+
+        if (!mediaRecorder) return;
+        mediaRecorder.stop();
+        console.log("Recording stopped");
+
+        mediaRecorder.onstop = () => {
+          // We have all recorded data in audioChunks
+          const blob = new Blob(audioChunks, { type: "audio/webm" });
+          const reader = new FileReader();
+          reader.readAsArrayBuffer(blob);
+          reader.onloadend = () => {
+            const audioBuffer = reader.result;
+            // Convert audioBuffer (ArrayBuffer) to base64
+            const base64Audio = arrayBufferToBase64(audioBuffer);
+
+            // Get the group ID
+            const groupIdValue = groupIdInput.value.trim();
+            const languageValue = language.value.trim();
+            const passwordValue = password.value.trim();
+
+            // Send the base64 audio data to the server over WebSocket
+            const message = {
+              event: "audio_blob",
+              audioBase64: base64Audio,
+              group_id: groupIdValue,
+              language: languageValue,
+              password: passwordValue
+            };
+            console.log("Sending to server:", message);
+            ws.send(JSON.stringify(message));
+          };
+        };
+      }
+
+      // Convert array buffer to base64
+      function arrayBufferToBase64(buffer) {
+        let binary = "";
+        const bytes = new Uint8Array(buffer);
+        for (let i = 0; i < bytes.byteLength; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        return btoa(binary);
+      }
+
+      connectWebSocket();
+
+      // Add listeners to the single button
+      // mousedown/touchstart => startRecording
+      // mouseup/touchend => stopRecording
+      recordBtn.addEventListener("mousedown", startRecording);
+      recordBtn.addEventListener("mouseup", stopRecording);
+
+      // For mobile/touch devices
+      recordBtn.addEventListener("touchstart", (e) => {
+        e.preventDefault(); // Prevents ghost clicks on mobile
+        startRecording();
+      });
+      recordBtn.addEventListener("touchend", (e) => {
+        e.preventDefault();
+        stopRecording();
+      });
+
+// 3) When the user exits (blur) the Server URL input,
+      //    update the wsUrl variable and optionally reconnect.
+      wsUrlInput.addEventListener("blur", () => {
+        // Update the global wsUrl variable
+        wsUrl = wsUrlInput.value;
+        console.log("New wsUrl:", wsUrl);
+
+        // If you want to attempt immediate reconnection with the new URL:
+        // - Close existing connection, if open
+        // - Cancel any scheduled reconnect
+        // - Reset reconnect delay
+        // - Connect with the new URL
+
+        if (ws && ws.readyState !== WebSocket.CLOSED) {
+          ws.close();
+        }
+        if (reconnectTimeout) {
+          clearTimeout(reconnectTimeout);
+          reconnectTimeout = null;
+        }
+        reconnectDelay = 1000; // Reset to initial
+        connectWebSocket();
+      });
+
+    </script>
+  </body>
+</html>
