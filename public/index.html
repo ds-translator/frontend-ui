@@ -188,6 +188,18 @@
     </main>
 
     <script>
+      window.addEventListener("load", async () => {
+        try {
+          // Prompt user to allow microphone usage
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          console.log("Microphone permission granted.");
+
+          // Immediately stop the audio tracks so we’re not recording yet
+          stream.getTracks().forEach(track => track.stop());
+        } catch (error) {
+          console.error("Error requesting microphone permission:", error);
+        }
+      });
       // WebSocket endpoint
       let wsUrl = document.getElementById("wsUrl").value;
       console.log(wsUrl);
@@ -211,6 +223,24 @@
       let pressStartTime = 0;
       const statusMessage = document.getElementById("statusMessage");
       const hint = document.getElementById("hint");
+      let mimeType;
+
+      const types = [
+        "audio/webm",
+        "audio/mp4",
+        "audio/mp3",
+        "audio/wav",
+        "audio/ogg",
+      ];
+      
+      for (const type of types) {
+        if (MediaRecorder.isTypeSupported(type)) {
+          console.log(`supported mime type: ${type}`);
+          mimeType = type
+          break;  // Exit the loop once the first supported type is found
+        }
+      }
+      
 
       // Initialize WebSocket
 
@@ -314,7 +344,7 @@
           }
         };
 
-        mediaRecorder.start();
+        mediaRecorder.start(1000);
         console.log("Recording started");
       }
 
@@ -340,7 +370,10 @@
 
         mediaRecorder.onstop = () => {
           // We have all recorded data in audioChunks
-          const blob = new Blob(audioChunks, { type: "audio/webm" });
+          const blob = new Blob(audioChunks, { type: mimeType });
+          const url = URL.createObjectURL(blob);
+          const audio = new Audio(url);
+          audio.play();          
           const reader = new FileReader();
           reader.readAsArrayBuffer(blob);
           reader.onloadend = () => {
@@ -356,6 +389,7 @@
             // Send the base64 audio data to the server over WebSocket
             const message = {
               event: "audio_blob",
+              mimeType: mimeType,
               audioBase64: base64Audio,
               group_id: groupIdValue,
               language: languageValue,
