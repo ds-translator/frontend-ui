@@ -1,5 +1,6 @@
 # Use the official nginx image as the base image
 FROM nginx:alpine
+LABEL org.opencontainers.image.source="https://github.com/ds-translator/frontend_ui"
 
 # Copy the custom nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf

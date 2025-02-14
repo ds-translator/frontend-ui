@@ -2,7 +2,9 @@ name: Backend CI/CD Pipeline
 
 on:
   push:
-    branches: ["develop, main"]
+    branches: 
+      - main
+      - develop
 
 permissions:
   contents: read
