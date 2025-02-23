@@ -23,7 +23,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@main
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Fetch all history and tags        
 
       - name: 'Login to GitHub Container Registry'
         uses: docker/login-action@v1
@@ -32,7 +34,26 @@ jobs:
           username: ${{github.actor}}
           password: ${{secrets.GITHUB_TOKEN}}
 
-      - name: 'Build Inventory Image'
+      - name: Set Image Name and Git Tag
         run: |
-          docker build . --file Dockerfile --tag ghcr.io/ds-translator/frontend_ui:latest
-          docker push ghcr.io/ds-translator/frontend_ui:latest
+          echo "IMAGE_NAME=ghcr.io/ds-translator/frontend-ui" >> $GITHUB_ENV
+          # Extract the tag from the Git ref, e.g. refs/tags/v1.0.0 becomes v1.0.0
+          TAG=$(git describe --tags --abbrev=0)
+
+          echo "IMAGE_TAG=${TAG}" >> $GITHUB_ENV
+          echo "Building image with tag: ${{ env.IMAGE_TAG }} and latest"
+
+      - name: Build Docker Image with Git Tag and latest Tag
+        run: docker build . --file Dockerfile --tag ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} --tag ${{ env.IMAGE_NAME }}:latest
+
+      - name: Trivy Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          format: "json"
+          output: "trivy-report.json"
+          severity: "CRITICAL,HIGH"
+
+      - name: Push Images to GHCR
+          docker push ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          docker push ${{ env.IMAGE_NAME }}:latest
