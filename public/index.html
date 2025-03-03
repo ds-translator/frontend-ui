@@ -190,7 +190,23 @@
     </main>
 
     <script>
+
+      
       window.addEventListener("load", async () => {
+        const wsUrlInput = document.getElementById("wsUrl");
+        const hostname = window.location.hostname;
+        let domain;
+    
+        if (hostname.includes("dev.")) {
+          domain = "dev.dstranslator.cloud";
+        } else if (hostname.includes("stage.")) {
+          domain = "stage.dstranslator.cloud";
+        } else {
+          domain = hostname;
+        }
+    
+        wsUrlInput.value = `wss://${domain}/ws`;
+
         try {
           // Prompt user to allow microphone usage
           const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
