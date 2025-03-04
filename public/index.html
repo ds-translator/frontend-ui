@@ -204,9 +204,10 @@
         } else {
           domain = hostname;
         }
-    
+        
         wsUrlInput.value = `wss://${domain}/ws`;
-
+        wsUrl = wsUrlInput.value;
+        
         try {
           // Prompt user to allow microphone usage
           const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
